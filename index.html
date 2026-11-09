@@ -2,23 +2,68 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>AI共同開発メモ</title>
+<style>
+body{font-family:sans-serif;max-width:700px;margin:20px auto;padding:0 12px}
+input{width:70%;font-size:16px;padding:6px}
+button{font-size:16px;padding:6px 10px;margin:4px 2px}
+.box{border:1px solid #ccc;border-radius:8px;padding:8px 12px;margin-top:14px}
+</style>
 </head>
 <body>
 <h1>AI共同開発メモ</h1>
-<input id="text" placeholder="決定事項を入力" size="40">
-<button onclick="add()">追加</button>
+
+<div class="box">
 <h2>決定事項</h2>
+<input id="decidedInput" placeholder="決定事項を入力">
+<button onclick="add('decided')">追加</button>
 <ul id="decided"></ul>
+</div>
+
+<div class="box">
+<h2>未決定事項</h2>
+<input id="pendingInput" placeholder="未決定事項を入力">
+<button onclick="add('pending')">追加</button>
+<ul id="pending"></ul>
+</div>
+
+<div class="box">
+<button onclick="saveText()">テキストで保存</button>
+<button onclick="saveJSON()">JSONで保存</button>
+</div>
+
 <script>
-function add(){
-  const input=document.getElementById("text");
+function add(id){
+  const input=document.getElementById(id+"Input");
   const t=input.value.trim();
   if(!t)return;
   const li=document.createElement("li");
   li.textContent=t;
-  document.getElementById("decided").appendChild(li);
+  document.getElementById(id).appendChild(li);
   input.value="";
+}
+function items(id){
+  return Array.from(document.querySelectorAll("#"+id+" li")).map(li=>li.textContent);
+}
+function download(content,name,type){
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(new Blob([content],{type:type}));
+  a.download=name;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+}
+function saveText(){
+  let out="AI共同開発メモ\n"+new Date().toLocaleString()+"\n\n【決定事項】\n";
+  items("decided").forEach(t=>out+="・"+t+"\n");
+  out+="\n【未決定事項】\n";
+  items("pending").forEach(t=>out+="・"+t+"\n");
+  download(out,"ai_memo.txt","text/plain");
+}
+function saveJSON(){
+  const data={savedAt:new Date().toISOString(),decided:items("decided"),pending:items("pending")};
+  download(JSON.stringify(data,null,2),"ai_memo.json","application/json");
 }
 </script>
 </body>
