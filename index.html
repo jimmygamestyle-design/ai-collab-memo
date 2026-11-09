@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>AI共同開発メモ</title>
+</head>
+<body>
+<h1>AI共同開発メモ</h1>
+<input id="text" placeholder="決定事項を入力" size="40">
+<button onclick="add()">追加</button>
+<h2>決定事項</h2>
+<ul id="decided"></ul>
+<script>
+function add(){
+  const input=document.getElementById("text");
+  const t=input.value.trim();
+  if(!t)return;
+  const li=document.createElement("li");
+  li.textContent=t;
+  document.getElementById("decided").appendChild(li);
+  input.value="";
+}
+</script>
+</body>
+</html>
